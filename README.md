@@ -127,16 +127,61 @@ INFO:forwarding.pox_controller:Packet in: src=xx:xx:xx:xx:xx:xx dst=ff:ff:ff:ff:
 cookie=0x0, priority=100, dl_dst=ff:ff:ff:ff:ff:ff actions=CONTROLLER:65535
 cookie=0x0, priority=200, dl_src=<flooder>, dl_dst=ff:ff:ff:ff:ff:ff actions=drop
 cookie=0x0, priority=50, icmp actions=output:<port>
-## Proof of Execution
-Screenshots are in the `/screenshots` folder:
-- `switch_connected.png` — POX controller connecting to switch
-- `pingall_result.png` — All hosts reachable, 0% packet loss
-- `ping_h1_h2.png` — Ping latency results
-- `iperf_normal.png` — Baseline throughput measurement
-- `iperf_rate_limited.png` — Throughput after rate limiting
-- `flow_table.png` — OpenFlow flow rules installed on switch
-- `port_stats.png` — Per-port packet statistics
 
+# Project Network Analysis: Proof of Execution
+
+The following section details the testing and verification of the network topology. All supporting media can be found in the `/screenshots` directory.
+
+---
+
+## 1. Controller Connection
+**Status:** POX controller successfully establishing a connection with the OpenFlow switch.
+![Switch Connection](screenshots/switch_connected.png)
+
+---
+
+## 2. Full Network Connectivity
+**Test:** Running a `pingall` to ensure every host can communicate within the topology.
+![Pingall Result](screenshots/pingall_result.png)
+
+---
+
+## 3. Latency Verification
+**Test:** ICMP Echo requests between h1 and h2 to measure round-trip time (RTT).
+![Ping Latency](screenshots/Ping_h1_h2.png)
+
+---
+
+## 4. Baseline Throughput
+**Test:** Measuring maximum TCP bandwidth using Iperf before any network throttling.
+![Baseline Throughput](screenshots/Iperf_normal.png)
+
+**Command:**
+```bash
+mininet> h2 iperf -s &
+mininet> h1 iperf -c 10.0.0.2 -t 10
+---
+```
+## 5. Rate Limiting Results
+**Test:** Verifying the impact of OpenFlow rate-limiting rules on the data plane.
+![Rate Limited Throughput](screenshots/Iperf_rate_limited.png)
+
+---
+
+## 6. OpenFlow Flow Table
+**Status:** Inspection of the active flow entries installed on the switch by the controller.
+![Flow Table](screenshots/Flow_table.png)
+
+---
+
+## 7. Port Statistics
+**Status:** Real-time analysis of packet counts and byte transfers per physical/virtual port.
+![Port Statistics](screenshots/port_stats.png)
+
+**Command:**
+```bash
+mininet> dpctl dump-ports
+```
 ## References
 1. Mininet Official Documentation - https://mininet.org/overview/
 2. POX Controller Wiki - https://noxrepo.github.io/pox-doc/html/
